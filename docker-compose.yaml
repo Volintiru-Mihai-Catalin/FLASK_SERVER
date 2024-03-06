@@ -1,0 +1,36 @@
+version: '3.6'
+services:
+
+  flask_app:
+    restart: always
+    build: 
+      context: ./flask_app
+    ports:
+      - "6000:6000"
+    depends_on:
+      - flask_db
+
+  flask_db:
+    image: postgres
+    restart: always
+    build: 
+      context: ./flask_db  
+    ports: 
+      - "5432:5432"
+    volumes: 
+      - ./docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+      - pgdata:/var/lib/postgresql/data
+    
+  pgadmin-compose:
+    restart: always
+    build:
+      context: ./pgadmin
+    ports: 
+      - "8081:80"
+    depends_on: 
+      - flask_db
+
+volumes:
+  pgdata:
+    driver: local 
+  
